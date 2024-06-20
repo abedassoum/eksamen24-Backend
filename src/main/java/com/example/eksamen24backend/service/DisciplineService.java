@@ -52,4 +52,12 @@ public class DisciplineService {
         discipline.setName(disciplineDto.getName());
         discipline.setResultType(disciplineDto.getResultType());
     }
+
+    public void deleteDiscipline(Integer id) {
+        Discipline discipline = disciplineRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Discipline not found"));
+        disciplineRepository.delete(discipline);
+    }
+
+
 }

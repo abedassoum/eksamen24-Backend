@@ -3,6 +3,7 @@ package com.example.eksamen24backend.api;
 import com.example.eksamen24backend.dto.DisciplineDto;
 import com.example.eksamen24backend.service.DisciplineService;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,5 +37,12 @@ public class DisciplineController {
     public DisciplineDto editDiscipline(@PathVariable Integer id, @RequestBody DisciplineDto request) {
         return disciplineService.editDiscipline(id, request);
     }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteDiscipline(@PathVariable Integer id) {
+        disciplineService.deleteDiscipline(id);
+    }
+
 }
 

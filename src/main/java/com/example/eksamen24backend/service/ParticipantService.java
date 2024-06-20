@@ -127,7 +127,6 @@ public class ParticipantService {
             Participant participant = participantRepository.findById(id)
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Participant not found"));
 
-            // Delete associated results
             resultRepository.deleteAll(participant.getResults());
 
             participantRepository.delete(participant);
