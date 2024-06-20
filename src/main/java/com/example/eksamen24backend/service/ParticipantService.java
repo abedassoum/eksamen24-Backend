@@ -91,8 +91,30 @@ public class ParticipantService {
             }
             Participant participant = participantRepository.findById(id)
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Participant not found"));
+
+            // Remove existing results
+            resultRepository.deleteAll(participant.getResults());
+
             updateParticipant(participant, request);
             participantRepository.save(participant);
+
+            // Add new results
+            List<Result> resultsList = request.getResults() == null ?
+                    new ArrayList<>() : request.getResults().stream().map(resultDto -> {
+                Result result = new Result();
+                result.setParticipant(participant);
+                Discipline discipline = disciplineRepository.findById(resultDto.getDisciplineId())
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Discipline not found"));
+                result.setDiscipline(discipline);
+                result.setResultType(resultDto.getResultType());
+                result.setDate(resultDto.getDate());
+                result.setResultValue(resultDto.getResultValue());
+                return resultRepository.save(result);
+            }).collect(Collectors.toList());
+
+            participant.setResults(resultsList);
+            participantRepository.save(participant);
+
             return mapToDto(participant);
         } catch (Exception e) {
             logger.error("Error editing participant", e);
@@ -104,6 +126,10 @@ public class ParticipantService {
         try {
             Participant participant = participantRepository.findById(id)
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Participant not found"));
+
+            // Delete associated results
+            resultRepository.deleteAll(participant.getResults());
+
             participantRepository.delete(participant);
         } catch (Exception e) {
             logger.error("Error deleting participant", e);
@@ -161,10 +187,7 @@ public class ParticipantService {
         dto.setAge(participant.getAge());
         dto.setClub(participant.getClub());
         dto.setDisciplines(participant.getDisciplines() != null ? participant.getDisciplines().stream().map(discipline -> {
-            DisciplineDto disciplineDto = new DisciplineDto();
-            disciplineDto.setId(discipline.getId());
-            disciplineDto.setName(discipline.getName());
-            disciplineDto.setResultType(discipline.getResultType());
+            DisciplineDto disciplineDto = new DisciplineDto(discipline);
             return disciplineDto;
         }).collect(Collectors.toList()) : new ArrayList<>());
         dto.setResults(participant.getResults() != null ? participant.getResults().stream().map(result -> {
