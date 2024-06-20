@@ -1,7 +1,9 @@
 package com.example.eksamen24backend.service;
 
 import com.example.eksamen24backend.dto.ResultDto;
+import com.example.eksamen24backend.entity.Discipline;
 import com.example.eksamen24backend.entity.Result;
+import com.example.eksamen24backend.repository.DisciplineRepository;
 import com.example.eksamen24backend.repository.ResultRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -14,9 +16,11 @@ import java.util.stream.Collectors;
 public class ResultService {
 
     private final ResultRepository resultRepository;
+    private final DisciplineRepository disciplineRepository;
 
-    public ResultService(ResultRepository resultRepository) {
+    public ResultService(ResultRepository resultRepository, DisciplineRepository disciplineRepository) {
         this.resultRepository = resultRepository;
+        this.disciplineRepository = disciplineRepository;
     }
 
     public List<ResultDto> getAllResults() {
@@ -33,6 +37,9 @@ public class ResultService {
     public ResultDto addResult(ResultDto request) {
         Result newResult = new Result();
         updateResult(newResult, request);
+        Discipline discipline = disciplineRepository.findById(request.getDisciplineId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Discipline not found"));
+        newResult.setDiscipline(discipline);
         resultRepository.save(newResult);
         return new ResultDto(newResult);
     }
@@ -62,7 +69,6 @@ public class ResultService {
     }
 
     public List<ResultDto> filterResults(String discipline, String gender, String ageGroup) {
-        // Implement filtering logic based on discipline, gender, and age group
         return resultRepository.findAll().stream()
                 .filter(result -> (discipline == null || result.getDiscipline().getName().equalsIgnoreCase(discipline)) &&
                         (gender == null || result.getParticipant().getGender().equalsIgnoreCase(gender)) &&

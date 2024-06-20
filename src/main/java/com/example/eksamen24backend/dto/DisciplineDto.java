@@ -18,6 +18,5 @@ public class DisciplineDto {
         this.name = discipline.getName();
         this.resultType = discipline.getResultType();
     }
-
 }
 

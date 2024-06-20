@@ -18,6 +18,7 @@ public class ResultDto {
     private Date date;
     private String resultValue;
     private Integer disciplineId;
+    private Integer participantId;
 
     public ResultDto(Result result) {
         this.id = result.getId();
@@ -25,6 +26,7 @@ public class ResultDto {
         this.date = result.getDate();
         this.resultValue = result.getResultValue();
         this.disciplineId = result.getDiscipline().getId();
+        this.participantId = result.getParticipant().getId();
     }
 }
 
