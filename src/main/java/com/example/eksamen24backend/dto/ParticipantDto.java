@@ -17,7 +17,8 @@ public class ParticipantDto {
     private String gender;
     private int age;
     private String club;
-
+    private List<DisciplineDto> disciplines;
+    private List<ResultDto> results;
 
     public ParticipantDto(Participant participant) {
         this.id = participant.getId();
@@ -25,7 +26,8 @@ public class ParticipantDto {
         this.gender = participant.getGender();
         this.age = participant.getAge();
         this.club = participant.getClub();
-
+        this.disciplines = participant.getDisciplines().stream().map(DisciplineDto::new).collect(Collectors.toList());
+        this.results = participant.getResults().stream().map(ResultDto::new).collect(Collectors.toList());
     }
 }
 

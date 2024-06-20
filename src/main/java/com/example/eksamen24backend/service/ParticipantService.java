@@ -1,8 +1,12 @@
 package com.example.eksamen24backend.service;
 
 import com.example.eksamen24backend.dto.ParticipantDto;
+import com.example.eksamen24backend.entity.Discipline;
 import com.example.eksamen24backend.entity.Participant;
+import com.example.eksamen24backend.entity.Result;
+import com.example.eksamen24backend.repository.DisciplineRepository;
 import com.example.eksamen24backend.repository.ParticipantRepository;
+import com.example.eksamen24backend.repository.ResultRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -14,10 +18,14 @@ import java.util.stream.Collectors;
 public class ParticipantService {
 
     private final ParticipantRepository participantRepository;
+    private final DisciplineRepository disciplineRepository;
+    private final ResultRepository resultRepository;
 
 
-    public ParticipantService(ParticipantRepository participantRepository) {
+    public ParticipantService(ParticipantRepository participantRepository, DisciplineRepository disciplineRepository, ResultRepository resultRepository) {
         this.participantRepository = participantRepository;
+        this.disciplineRepository = disciplineRepository;
+        this.resultRepository = resultRepository;
     }
 
     public List<ParticipantDto> getAllParticipants() {
@@ -35,6 +43,14 @@ public class ParticipantService {
         Participant newParticipant = new Participant();
         updateParticipant(newParticipant, request);
         participantRepository.save(newParticipant);
+        List<Result> resultsList = request.getResults().stream().map(resultDto -> {
+            Result result = new Result();
+            result.setParticipant(newParticipant);
+            Discipline discipline =  disciplineRepository.findById(resultDto.getDisciplineId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Discipline not found"));
+            result.setDiscipline(discipline);
+            return result;
+        }).collect(Collectors.toList());
         return new ParticipantDto(newParticipant);
     }
 
