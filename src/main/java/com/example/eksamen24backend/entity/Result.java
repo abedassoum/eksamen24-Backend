@@ -25,11 +25,11 @@ public class Result {
     private String resultValue;
 
     @ManyToOne
-    @JoinColumn(name = "participant_id")
+    @JoinColumn(name = "participant_id", nullable = false)
     private Participant participant;
 
     @ManyToOne
-    @JoinColumn(name = "discipline_id")
+    @JoinColumn(name = "discipline_id", nullable = false)
     private Discipline discipline;
 }
 

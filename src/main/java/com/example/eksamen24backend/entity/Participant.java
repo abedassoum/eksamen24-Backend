@@ -37,4 +37,20 @@ public class Participant {
 
     @OneToMany(mappedBy = "participant")
     private List<Result> results;
+
+    public String getAgeGroup() {
+        if (age >= 6 && age <= 9) {
+            return "Children";
+        } else if (age >= 10 && age <= 13) {
+            return "Young";
+        } else if (age >= 14 && age <= 22) {
+            return "Junior";
+        } else if (age >= 23 && age <= 40) {
+            return "Adults";
+        } else if (age >= 41) {
+            return "Seniors";
+        } else {
+            return "Unknown";
+        }
+    }
 }
